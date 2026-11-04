@@ -1,0 +1,23 @@
+{
+  "name": "@cindy/web-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cindy browser client for the headless server",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev:proxy": "node scripts/dev-proxy.mjs",
+    "stage": "node scripts/stage.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "esbuild": "^0.28.1",
+    "typescript": "^5.7.0"
+  }
+}
