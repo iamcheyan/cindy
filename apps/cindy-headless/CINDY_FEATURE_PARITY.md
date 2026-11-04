@@ -5,6 +5,13 @@ This inventory applies to Cindy Headless `0.4.3`, based on Cindy upstream commit
 only when the Headless CLI or Harbor adapter can exercise it; vendored source
 alone is not sufficient.
 
+The one-shot benchmark/Harbor contract below is unchanged by the product server
+mode. The server mode is a separate runtime target with its own persistence,
+browser authorization and incomplete capability matrix; see
+[`HEADLESS_SERVER.md`](HEADLESS_SERVER.md). A capability listed as available
+for benchmark runs is not by itself evidence that the server exposes it to a
+browser.
+
 ## Runtime pin alignment: 2026-10-30
 
 Example and smoke profiles now follow Claude Code `2.1.312` and Pi `1.4.0`,

@@ -1,0 +1,17 @@
+BASE http://127.0.0.1:43501
+EXIT 0
+STDOUT
+send status 201
+both clients show AskUserQuestion card
+snapshot {"status":200,"turnState":"completed","interactions":0,"messages":[{"role":"user","kind":"text","content":"Ask me which temporary environment to use."},{"role":"assistant","kind":"text","content":"interaction-approved"}]}
+{"ok":true,"taskId":"<uuid>","decision":"ask_user_question answer","clients":2}
+
+STDERR
+(node:789913) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:789931) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:790072) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:790086) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

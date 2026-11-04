@@ -134,6 +134,19 @@ clean.
 
 ## CLI
 
+The existing `run`, profile, capability and Harbor commands remain the one-shot benchmark interface. A separate product server mode is available through `server init`, `server serve` and `server clients`; it uses an independent owner-only data root and never treats a benchmark Profile/result directory as product state.
+
+```sh
+node apps/cindy-headless/dist/cli.cjs server init --data-dir <private-data-dir> --agent claude-code --agent-binary <absolute-agent-path> --system-prompt <absolute-reviewed-prompt.md> --model claude-sonnet-4-5 --provider cindy --port 8787 [--web-root <absolute-web-dist>] [--tailscale-hostname <machine.tailnet.ts.net> --tailscale-path /cindy/<installation-id>]
+node apps/cindy-headless/dist/cli.cjs server serve --data-dir <private-data-dir>
+node apps/cindy-headless/dist/cli.cjs server clients pending --data-dir <private-data-dir>
+node apps/cindy-headless/dist/cli.cjs server clients approve <request-prefix> --data-dir <private-data-dir>
+node apps/cindy-headless/dist/cli.cjs server clients list --data-dir <private-data-dir>
+node apps/cindy-headless/dist/cli.cjs server clients revoke <client-id> --data-dir <private-data-dir>
+```
+
+`server init` also requires an absolute `--system-prompt` file; use a reviewed Cindy production prompt rather than running an Agent without the product prompt. It creates a private default workspace below the data root. Set provider credentials only through the protected process environment or an external secret manager. The listener is loopback-only. Authenticated Web interaction routes handle permission, ask-user-question and plan-review requests emitted by a supported Agent adapter; adapter coverage is not yet validated across all backends. `bypassPermissions` remains behind the existing sandbox/unsandboxed-opt-in safety check. `--web-root` enables the contract's unauthenticated static Web files with CSP and a strict path/extension allowlist. If `--tailscale-hostname` and `--tailscale-path` are configured, the listener still binds only `127.0.0.1`; the server only reads `tailscale status --json` and `tailscale serve status --json` to verify an existing HTTPS Serve route and will not create, modify, reset or Funnel it. A verified URL is exposed only with `exposure.status=ready`. The Tailscale flags require `--web-root` and a fixed non-zero port. Browser pairing, API coverage, current limitations, local Web integration and tailnet acceptance steps are documented in [`HEADLESS_SERVER.md`](HEADLESS_SERVER.md).
+
 Inspect a bundle's credential-free web capability catalog:
 
 ```powershell

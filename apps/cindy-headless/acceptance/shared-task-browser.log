@@ -1,0 +1,27 @@
+BASE http://127.0.0.1:39227
+EXIT 0
+STDOUT
+A paired
+B paired
+task opened http://127.0.0.1:39227/#/task/<uuid>
+send response 201
+A received assistant text
+B sees shared task
+second send response 201
+Stop applied
+A revoked; B still authenticated
+{"ok":true,"taskUrl":"http://127.0.0.1:39227/#/task/<uuid>"}
+
+STDERR
+(node:788762) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:788811) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:789073) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:789196) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:789466) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:789505) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

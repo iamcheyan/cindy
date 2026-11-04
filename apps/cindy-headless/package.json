@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@cindy/maker-core": "workspace:*",
+    "@cindy/maker-shared": "workspace:*",
     "@cindy/mcps": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0"
   },

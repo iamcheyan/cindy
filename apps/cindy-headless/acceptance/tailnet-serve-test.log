@@ -1,0 +1,37 @@
+host=<tailnet-host> path=/cindy-accept-bd3d7b52 port=40261
+exposure=ready
+HTTPS static=200
+HTTPS unauthenticated API=401
+{"ok":true,"state":"stopping","signal":"SIGTERM"}
+serve off rc=0
+serve canonical digest before=37eb2559b80d74545512f42dad338bd2bd42f8fb097279fc608b8bdc90291d14
+serve canonical digest after=37eb2559b80d74545512f42dad338bd2bd42f8fb097279fc608b8bdc90291d14
+serve exact restored=True
+funnel exact restored=True
+route rows before=13 after=13
+before route https://<tailnet-host>:10000 | / | http://127.0.0.1:9119
+before route https://<tailnet-host>:10001 | / | http://127.0.0.1:3773
+before route https://<tailnet-host>:443 | / | http://127.0.0.1:80
+before route https://<tailnet-host>:443 | /aoba | http://127.0.0.1:8851
+before route https://<tailnet-host>:443 | /desktop | http://127.0.0.1:6082
+before route https://<tailnet-host>:443 | /magpie | http://127.0.0.1:3426
+before route https://<tailnet-host>:443 | /xfce | http://127.0.0.1:6082
+before route https://<tailnet-host>:8443 | / | http://127.0.0.1:3426
+before route https://<tailnet-host>:8444 | / | http://127.0.0.1:3425
+before route https://<tailnet-host>:8447 | / | http://127.0.0.1:6082
+before route https://<tailnet-host>:8448 | / | http://127.0.0.1:6081
+before route https://<tailnet-host>:8449 | / | http://127.0.0.1:6082
+before route https://<tailnet-host>:8450 | / | http://127.0.0.1:8096
+after route https://<tailnet-host>:10000 | / | http://127.0.0.1:9119
+after route https://<tailnet-host>:10001 | / | http://127.0.0.1:3773
+after route https://<tailnet-host>:443 | / | http://127.0.0.1:80
+after route https://<tailnet-host>:443 | /aoba | http://127.0.0.1:8851
+after route https://<tailnet-host>:443 | /desktop | http://127.0.0.1:6082
+after route https://<tailnet-host>:443 | /magpie | http://127.0.0.1:3426
+after route https://<tailnet-host>:443 | /xfce | http://127.0.0.1:6082
+after route https://<tailnet-host>:8443 | / | http://127.0.0.1:3426
+after route https://<tailnet-host>:8444 | / | http://127.0.0.1:3425
+after route https://<tailnet-host>:8447 | / | http://127.0.0.1:6082
+after route https://<tailnet-host>:8448 | / | http://127.0.0.1:6081
+after route https://<tailnet-host>:8449 | / | http://127.0.0.1:6082
+after route https://<tailnet-host>:8450 | / | http://127.0.0.1:8096

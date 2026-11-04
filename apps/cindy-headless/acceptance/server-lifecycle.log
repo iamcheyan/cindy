@@ -1,0 +1,10 @@
+$ cindy-headless server init ...
+{"ok":true,"command":"server init","config":"server-config.json","webEnabled":true,"host":"127.0.0.1","port":0}
+{"ok":true,"state":"listening","host":"127.0.0.1","port":44247,"exposure":{"mode":"loopback","status":"loopback-only","detail":"Tailscale HTTPS Serve is not configured for this server."}}
+{"ok":true,"state":"stopping","signal":"SIGTERM"}
+STDERR
+(node:784371) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"level":"info","message":"MakerMemoryManager initialized","enabled":false,"basePath":"[redacted]","reviewAgent":"claude-code"}
+{"level":"info","message":"Maker initialized","agents":["claude-code"],"hasOnBeforeStartHook":false,"hasOnCloseHook":false,"makerMemory":true}
+{"level":"info","message":"MakerMemoryManager disposed"}

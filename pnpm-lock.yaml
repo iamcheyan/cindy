@@ -82,6 +82,9 @@ importers:
       '@cindy/maker-core':
         specifier: workspace:*
         version: link:../../packages/maker-core
+      '@cindy/maker-shared':
+        specifier: workspace:*
+        version: link:../../packages/maker-shared
       '@cindy/mcps':
         specifier: workspace:*
         version: link:../../packages/lizi-mcps

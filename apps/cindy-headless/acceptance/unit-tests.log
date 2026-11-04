@@ -1,0 +1,56 @@
+
+> cindy-headless@0.4.3 test <repo>/apps/cindy-headless
+> vitest run
+
+
+ RUN  v3.2.7 <repo>/apps/cindy-headless
+
+ ✓ src/built-cli.test.mjs (2 tests) 2928ms
+   ✓ standalone CommonJS CLI artifacts > starts the bundled runtime outside the checkout without gateway configuration  946ms
+   ✓ standalone CommonJS CLI artifacts > runs the bundled evaluation CLI on local results  440ms
+ ✓ src/codex-memory-bridge.test.ts (1 test) 139ms
+ ✓ src/headless-integrations.test.ts (6 tests) 113ms
+ ✓ src/profile-generation.test.ts (10 tests) 71ms
+ ✓ src/production-profile-parity.test.ts (3 tests) 37ms
+ ✓ src/profile.test.ts (19 tests) 186ms
+ ✓ src/memory-contract.test.ts (1 test) 36ms
+ ✓ src/server/server.test.ts (4 tests) 420ms
+ ✓ src/turn-completion.test.ts (2 tests) 621ms
+   ✓ Headless observer with the real Session event lifecycle > waits for claude-code continuation and then accepts a result-only next turn  311ms
+   ✓ Headless observer with the real Session event lifecycle > waits for codex continuation and then accepts a result-only next turn  308ms
+ ✓ src/benchmark.test.ts (28 tests) 49ms
+ ✓ src/bundle-dist.test.mjs (5 tests) 56ms
+ ✓ src/prompt-parity.test.ts (3 tests) 19ms
+ ✓ src/compatibility.test.ts (11 tests) 19ms
+ ✓ src/host.test.ts (17 tests) 17ms
+ ✓ src/session-storage.test.ts (1 test) 20ms
+ ✓ src/gateway-config.test.ts (3 tests) 20ms
+ ✓ src/cli.test.ts (3 tests) 8ms
+ ✓ src/project-context.test.ts (2 tests) 8ms
+ ✓ src/usage.test.ts (2 tests) 14ms
+
+ Test Files  19 passed (19)
+      Tests  123 passed (123)
+   Start at  14:15:20
+   Duration  13.61s (transform 8.59s, setup 0ms, collect 24.85s, tests 4.78s, environment 7ms, prepare 4.04s)
+
+
+STDERR
+▲ [WARNING] Using direct eval with a bundler is not recommended and may cause problems [direct-eval]
+
+    ../../packages/maker-core/src/agents/shared/image-resizer.ts:45:11:
+      45 │         : (eval('require') as NodeJS.Require);
+         ╵            ~~~~
+
+  You can read more about direct eval and bundling here: https://esbuild.github.io/link/direct-eval
+
+(node:784758) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:786532) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:784752) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:787001) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:787389) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

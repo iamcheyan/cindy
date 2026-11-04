@@ -2,7 +2,7 @@ import { access, appendFile, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promi
 import os from 'node:os';
 import path from 'node:path';
 import { createMemoryMcpProvider } from './memory-provider.js';
-import { ClaudeCodeAgent, CodexAgent, PiAgent, Maker, MakerMemoryManager, isTerminalTurnEvent, type AgentEvent, type AgentKind, type AgentRuntimeConfig, type AuthAdapter, type BaseAgent, type Logger, type McpProvider, type UserMessage } from '@cindy/maker-core';
+import { ClaudeCodeAgent, CodexAgent, PiAgent, Maker, MakerMemoryManager, isTerminalTurnEvent, type AgentEvent, type AgentKind, type AgentRuntimeConfig, type AuthAdapter, type BaseAgent, type Logger, type McpProvider, type PiProjectTrustInputSnapshot, type UserMessage } from '@cindy/maker-core';
 import { startCodexMemoryBridge, type CodexMemoryBridge } from './codex-memory-bridge.js';
 import { sha256, type HeadlessProfile, type ResolvedProfile } from './profile.js';
 import { readProjectContext } from './project-context.js';
@@ -159,7 +159,7 @@ function piRemoteMcpConfig(profile: HeadlessProfile) {
   return { servers, env };
 }
 
-type PiProjectTrustSnapshot = Awaited<ReturnType<typeof resolvePiProjectTrust>>;
+export type PiProjectTrustSnapshot = PiProjectTrustInputSnapshot | null;
 
 export function piProjectSkillsEvidence(snapshot: PiProjectTrustSnapshot) {
   const canonicalRepoRoot = snapshot?.identity.canonicalRepoRoot;
@@ -172,9 +172,9 @@ export function piProjectSkillsEvidence(snapshot: PiProjectTrustSnapshot) {
   };
 }
 
-function createHeadlessMaker(resolved: ResolvedProfile, stateDir: string, workingDir: string, piProjectTrust: PiProjectTrustSnapshot, piSkillDenials: readonly string[]): { maker: Maker; makerMemory: MakerMemoryManager; sessionStorage: SqliteSessionStorage; shutdownBridge(): Promise<void> } {
+export function createHeadlessMaker(resolved: ResolvedProfile, stateDir: string, workingDir: string, piProjectTrust: PiProjectTrustSnapshot, piSkillDenials: readonly string[], providedLogger?: Logger): { maker: Maker; makerMemory: MakerMemoryManager; sessionStorage: SqliteSessionStorage; shutdownBridge(): Promise<void> } {
   const profile = resolved.profile;
-  const logger = jsonLogger();
+  const logger = providedLogger ?? jsonLogger();
   const makerMemory = new MakerMemoryManager({
     basePath: stateDir,
     sqliteFactory: (filePath) => {

@@ -35,6 +35,12 @@ function effortFlag(): HeadlessProfile['model']['effort'] | undefined {
 }
 
 async function main(): Promise<void> {
+  if (command === 'server') {
+    // The server uses node:sqlite (Node 22.5+); keep benchmark commands loadable on the existing CLI runtime.
+    const { runServerCommand } = await import('./server/cli.js');
+    await runServerCommand(args);
+    return;
+  }
   if (command === 'doctor' || command === 'verify-agent' || command === 'run') {
     applyGatewayConfig(await loadGatewayConfig());
   }
@@ -131,8 +137,15 @@ async function main(): Promise<void> {
     console.log(JSON.stringify(validateOracleGate(manifest.dataset.taskIds, results), null, 2));
     return;
   }
-  console.error('cindy-headless commands: version, doctor, verify-agent, compatibility-report, profile validate, capabilities [--manifest <bundle-manifest.json>], run [--turns-file] [--timeout-owner headless|external] [--timeout-ms N], plan [--paired|--scheduled], paired-summary, report, freeze-hard-30, oracle-gate');
+  console.error('cindy-headless commands: server init|serve|clients, version, doctor, verify-agent, compatibility-report, profile validate, capabilities [--manifest <bundle-manifest.json>], run [--turns-file] [--timeout-owner headless|external] [--timeout-ms N], plan [--paired|--scheduled], paired-summary, report, freeze-hard-30, oracle-gate');
   process.exitCode = 2;
 }
 
-main().catch((error) => { console.error(JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) })); process.exitCode = 1; });
+main().catch((error) => {
+  let message = error instanceof Error ? error.message : String(error);
+  if (command === 'server') {
+    message = message.replace(/(?:[A-Za-z]:\\(?:[^\\\s]+\\)*[^\\\s]+|(?:\/[-A-Za-z0-9._]+){2,})/g, '[path]').slice(0, 1_000);
+  }
+  console.error(JSON.stringify({ ok: false, error: message }));
+  process.exitCode = 1;
+});
