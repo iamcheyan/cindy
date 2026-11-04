@@ -147,6 +147,104 @@ node apps/cindy-headless/dist/cli.cjs server clients revoke <client-id> --data-d
 
 `server init` also requires an absolute `--system-prompt` file; use a reviewed Cindy production prompt rather than running an Agent without the product prompt. It creates a private default workspace below the data root. Set provider credentials only through the protected process environment or an external secret manager. The listener is loopback-only. Authenticated Web interaction routes handle permission, ask-user-question and plan-review requests emitted by a supported Agent adapter; adapter coverage is not yet validated across all backends. `bypassPermissions` remains behind the existing sandbox/unsandboxed-opt-in safety check. `--web-root` enables the contract's unauthenticated static Web files with CSP and a strict path/extension allowlist. If `--tailscale-hostname` and `--tailscale-path` are configured, the listener still binds only `127.0.0.1`; the server only reads `tailscale status --json` and `tailscale serve status --json` to verify an existing HTTPS Serve route and will not create, modify, reset or Funnel it. A verified URL is exposed only with `exposure.status=ready`. The Tailscale flags require `--web-root` and a fixed non-zero port. Browser pairing, API coverage, current limitations, local Web integration and tailnet acceptance steps are documented in [`HEADLESS_SERVER.md`](HEADLESS_SERVER.md).
 
+### Headless server quickstart
+
+Run these commands from the repository root after building the CLI. The
+`server` mode is separate from benchmark `run`; it is a long-lived product
+process, not a one-shot evaluation.
+
+1. Choose a private data root and an existing workspace. `server init` needs an
+   absolute Agent binary and an absolute reviewed system prompt. Use
+   `--port 0` for an ephemeral loopback port; use a fixed non-zero port when
+   configuring Tailscale Serve. `--web-root` is optional and must point at an
+   absolute built Web directory containing `index.html`, `app.js`, and
+   `app.css`. `--workspace-root` defaults to `<data-dir>/workspaces`.
+
+   ```sh
+   node apps/cindy-headless/dist/cli.cjs server init \
+     --data-dir ~/.local/share/cindy-headless-server \
+     --agent claude-code \
+     --agent-binary /opt/cindy/agents/claude \
+     --system-prompt /opt/cindy/prompts/cindy-production.md \
+     --model claude-sonnet-4-5 \
+     --provider cindy \
+     --port 8787 \
+     --web-root /opt/cindy/web \
+     --workspace-root /srv/cindy/workspaces
+   ```
+
+   `--effort` and `--permission-mode` are optional; the default permission mode
+   is backend-specific. Provider API keys belong only in the process
+   environment/secret manager, never in the command line, config file, Web UI,
+   or logs.
+
+   Optional Tailnet exposure only verifies an existing route. Both flags are
+   required together, and `--port` must be fixed:
+
+   ```sh
+   --tailscale-hostname <machine>.<tailnet>.ts.net \
+   --tailscale-path /cindy/<installation-id>
+   ```
+
+   The server does not create, modify, reset, or Funnel the route. If Serve is
+   absent, keep using loopback; the server reports `loopback-only` and does not
+   invent a URL.
+
+2. Start the long-lived server:
+
+   ```sh
+   node apps/cindy-headless/dist/cli.cjs server serve \
+     --data-dir ~/.local/share/cindy-headless-server
+   ```
+
+   Wait for `{"ok":true,"state":"listening","host":"127.0.0.1",...}`. If
+   Tailscale is configured, wait for `exposure.status=ready` before sharing the
+   printed URL.
+
+3. Open the Web client at the loopback URL, or at the verified Tailscale URL.
+   Enter a browser label and submit the pairing request. On the server terminal:
+
+   ```sh
+   node apps/cindy-headless/dist/cli.cjs server clients pending \
+     --data-dir ~/.local/share/cindy-headless-server
+   node apps/cindy-headless/dist/cli.cjs server clients approve <request-prefix> \
+     --data-dir ~/.local/share/cindy-headless-server
+   node apps/cindy-headless/dist/cli.cjs server clients list \
+     --data-dir ~/.local/share/cindy-headless-server
+   ```
+
+   The browser polls `POST /api/auth/requests/status` with the one-time request
+   ID in the JSON body. The ID is not placed in the URL or localStorage.
+
+4. Stop with Ctrl+C or `SIGTERM`; wait for the `state:"stopping"` log and exit.
+   Revoke one device without affecting others:
+
+   ```sh
+   node apps/cindy-headless/dist/cli.cjs server clients revoke <client-id> \
+     --data-dir ~/.local/share/cindy-headless-server
+   ```
+
+   Remove only disposable, explicitly created state/workspace directories after
+   the process exits. The default state root contains `server-config.json`,
+   `cindy-server.sqlite` (plus WAL/SHM while running), Agent/session storage,
+   logs if configured, and `workspaces/`. To back up, stop the server first and
+   copy the whole data root offline; do not copy a live WAL database file alone.
+   `server.lock` is normally removed on clean exit; never delete a lock belonging
+   to a live PID.
+
+   Common failures:
+
+   - `server is not initialized` → run `server init` first.
+   - `web-root`/`index.html` error → point `--web-root` at a complete Web build,
+     not a source checkout.
+   - Tailscale configured but no route → the server stays `loopback-only`; create
+     the route separately only after explicit operator approval, or omit the
+     Tailscale flags.
+   - `another ... instance owns this data directory` → stop the existing server;
+     do not remove a live `server.lock`.
+   - `ORIGIN_REJECTED`/`UNAUTHENTICATED`/`CSRF_FAILED` → use the exact served
+     origin, a valid non-revoked cookie, and the in-memory CSRF token.
+
 Inspect a bundle's credential-free web capability catalog:
 
 ```powershell
