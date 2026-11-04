@@ -52,8 +52,9 @@ cleanup steps are in
 
 - `GET /api/session` returns the authenticated client, CSRF token, server
   capabilities and verified exposure status.
-- Unauthenticated browsers pair with `POST /api/auth/requests` and poll
-  `GET /api/auth/requests/:requestId` until the owner approves locally.
+- Unauthenticated browsers pair with `POST /api/auth/requests`, then poll
+  `POST /api/auth/requests/status` with `{ requestId }` in the JSON body until
+  the owner approves locally. The request ID never appears in the URL.
 - Task data and events follow the contract exactly. The client never invents a
   Tailscale URL, task option, workspace path or successful send.
 - The client sends a stable `Idempotency-Key` for each pending user input and
@@ -73,7 +74,45 @@ sessionStorage, an explicit web-scope/limitations panel, bounded history hydrati
 SSE streaming with reconnect/dedupe, desktop/mobile layout, Light/Dark tokens, and the supported UI
 languages.
 
-Not implemented here: attachments/media, live runtime model switching, task
-pin/delete/fork/rewind, settings, plugins/MCP Apps, bots, voice/OS capabilities,
-and the server itself. Interaction endpoints are additive contract v1 and are
-not yet implemented by the current headless server.
+Not implemented here: attachments/media, live runtime model switching, task pin/delete/fork/rewind, settings, plugins/MCP Apps, bots/groups, and voice/OS capabilities. The headless server itself is maintained in its own package and worktree. It provides interaction endpoints and SSE for permission, AskUserQuestion, and plan-review cards; those paths are implemented by this Web client, while pending interaction resolvers remain in-memory on the server.
+
+## Quick start
+
+1. Build the static client:
+
+   ```bash
+   pnpm --filter @cindy/web-client build
+   ```
+
+2. Stage verified assets to the directory that the headless server will serve:
+
+   ```bash
+   pnpm --filter @cindy/web-client stage -- --out <web-root>
+   ```
+
+3. Configure the headless server with `server init --web-root <web-root> ...`, then start it:
+
+   ```bash
+   node apps/cindy-headless/dist/cli.cjs server serve --data-dir <data-dir>
+   ```
+
+4. Open the exact URL reported as `exposure.status: ready` (or the loopback URL for local use) and request browser access.
+5. On the server, inspect and approve that browser:
+
+   ```bash
+   node apps/cindy-headless/dist/cli.cjs server clients pending --data-dir <data-dir>
+   node apps/cindy-headless/dist/cli.cjs server clients approve <request-prefix> --data-dir <data-dir>
+   ```
+
+6. The approved browser enters the shared task space. Pairing request IDs are submitted in the status endpoint body, never in the URL.
+
+## Acceptance screenshots
+
+The real Chrome / Headless / Tailscale HTTPS acceptance run and its pass criteria are documented in [the evidence README](../../docs/acceptance/web-client-2026-11-04/README.md). All screenshots are redacted: Tailnet URL, client label and short ID, workspace path, and interaction request ID are masked; no cookie, CSRF value, provider key, or private conversation is present.
+
+| Screenshot | Acceptance step | Pass standard |
+|---|---|---|
+| [Shared task — browser A, Light](../../docs/acceptance/web-client-2026-11-04/shared-task-browser-a-light.png) | Browser A creates the task and sends the synthetic prompt. | A shows the final `WEB-OK` reply and the turn is complete. |
+| [Shared task — browser B, Dark](../../docs/acceptance/web-client-2026-11-04/shared-task-browser-b-dark.png) | Independent browser B opens the same task. | B shows the same final reply; Light and Dark render with distinct theme surfaces. |
+| [Permission interaction card](../../docs/acceptance/web-client-2026-11-04/permission-interaction-card.png) | A real Codex sandbox permission request arrives over SSE; the browser selects Deny. | The card and choices render; Deny clears the pending card without granting the tool. |
+| [Tailnet HTTPS](../../docs/acceptance/web-client-2026-11-04/tailnet-https-page.png) | A paired browser opens the app through the temporary Tailnet HTTPS route. | Cindy reports “Available on your tailnet”; the URL is masked. The verified request returned HTTP 200 with TLS verification result 0. |
